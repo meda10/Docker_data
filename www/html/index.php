@@ -5,7 +5,7 @@
 
     <body>
     <h1>Hello World!</h1>
-    <p><?php echo 'We are running PHP, version: ' . phpversion(); ?></p>
+    <p><?php echo 'We are running PHP, version: GGG' . phpversion(); ?></p>
     <?
         $database ="zavrel_db";
         $user = "user";
