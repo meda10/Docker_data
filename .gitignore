@@ -1,0 +1,7 @@
+# Project exclude paths
+/venv/
+/nginx
+/php
+/docker-compose-github.yml
+/docker-compose.yml
+/app-data
