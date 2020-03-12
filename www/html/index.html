@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link href="css/style.css" rel="stylesheet" type="text/css">
+    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.js"></script>
+    <!-- Bootstrap 4 + tables
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.15.5/dist/bootstrap-table.min.css">
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.15.5/dist/bootstrap-table.min.js"></script>
+    -->
+    <script src="js/show.js"></script>
+    <script src="js/fill.js"></script>
+    <script src="js/add_nodes.js"></script>
+    <title>Simulator</title>
+</head>
+<body>
+<div class="wrap">
+    <div class="header">
+        <h1><a href="index.html">Simulator</a></h1>
+    </div>
+</div>
+<div class="wrap">
+    <div class="content">
+        <div class="form">
+            <form action="upload.php" class="form-horizontal" method="post" enctype="multipart/form-data">
+                <fieldset id="file_upload">
+                    <legend>Load from file</legend>
+                    <div class="control-group">
+                        <div class="control-label"><label for="file_to_upload">Select .ini file</label></div>
+                        <div class="controls">
+                            <input class="form-control-file" type="file" name="file_to_upload" id="file_to_upload">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="controls">
+                            <input class="btn btn-primary button" name="_submit" type="submit" value="Submit">
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+            <form action="parse_form.php" class="form-horizontal" method="post" enctype="multipart/form-data">
+                <fieldset id="main_form">
+                    <legend>Simulation</legend>
+                    <div class="control-group required">
+                        <div class="control-label"><label for="simulation_type">Simulation type:</label></div>
+                        <div class="controls">
+                            <select class="second_row" id="simulation_type" name="simulation_type"
+                                    onchange="java_script_:show(this.options[this.selectedIndex].value)">
+                                <option value="path">Path</option>
+                                <option value="hidden_service">Hidden service</option>
+                                <option value="attack">Correlation attack</option>
+                                <option value="exit_attack">Exit attack</option>
+                                <option value="multiple_sim">Multiple simulations</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="control-group required">
+                        <div class="control-label"><label for="remove_duplicate_paths">Remove duplicate paths:</label></div>
+                        <div class="controls"><input class="second_row" id="remove_duplicate_paths"
+                                                     name="remove_duplicate_paths" type="checkbox"></div>
+                    </div>
+                    <div class="control-group required">
+                        <div class="control-label"><label for="same_bandwidth">Same bandwidth:</label></div>
+                        <div class="controls">
+                            <input class="second_row" id="same_bandwidth" name="same_bandwidth" type="checkbox"
+                                   onchange="java_script_:show_bandwidth()">
+                        </div>
+                    </div>
+                    <div id="bandwidth_value_div" style="display: none">
+                        <div class="control-group">
+                            <div class="control-label"><label for="guard_bandwidth_value">Bandwidth guard (optional) B/s:</label></div>
+                            <div class="controls"><input class="second_row" id="guard_bandwidth_value" min="1" name="guard_bandwidth_value" type="number"></div>
+                        </div>
+                        <div class="control-group">
+                            <div class="control-label"><label for="middle_bandwidth_value">Bandwidth middle (optional) B/s:</label></div>
+                            <div class="controls"><input class="second_row" id="middle_bandwidth_value" min="1" name="middle_bandwidth_value" type="number"></div>
+                        </div>
+                        <div class="control-group">
+                            <div class="control-label"><label for="exit_bandwidth_value">Bandwidth exit (optional) B/s:</label></div>
+                            <div class="controls"><input class="second_row" id="exit_bandwidth_value" min="1" name="exit_bandwidth_value" type="number"></div>
+                        </div>
+                    </div>
+                    <div id="hidden_div_path" style="display:grid">
+                        <div class="control-group required">
+                            <div class="control-label"><label for="guard">Guard:</label></div>
+                            <div class="controls"><input class="second_row" id="guard" min="0" name="guard" type="number">
+                            </div>
+                        </div>
+                        <div class="control-group required">
+                            <div class="control-label"><label for="middle">Middle:</label></div>
+                            <div class="controls"><input class="second_row" id="middle" min="0" name="middle" type="number">
+                            </div>
+                        </div>
+                        <div class="control-group required">
+                            <div class="control-label"><label for="exit">Exit:</label></div>
+                            <div class="controls"><input class="second_row" id="exit" min="0" name="exit" type="number">
+                            </div>
+                        </div>
+                        <div class="control-group required">
+                            <div class="control-label"><label for="guard_exit">Guard exit:</label></div>
+                            <div class="controls"><input class="second_row" id="guard_exit" min="0" name="guard_exit"
+                                                         type="number"></div>
+                        </div>
+                        <div class="control-group required">
+                            <div class="control-label"><label for="number_of_simulations">Number of simulations:</label>
+                            </div>
+                            <div class="controls"><input class="second_row" id="number_of_simulations" min="1"
+                                                         name="number_of_simulations" type="number"></div>
+                        </div>
+                        <div class="control-group required">
+                            <div class="control-label"><label for="simulation_size">Simulation size:</label></div>
+                            <div class="controls">
+                                <select class="second_row" id="simulation_size" name="simulation_size">
+                                    <option value="small">Small</option>
+                                    <option value="large">Large</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="control-group required">
+                            <div class="control-label"><label for="path_selection">Path selection:</label></div>
+                            <div class="controls">
+                                <select class="second_row" id="path_selection" name="path_selection">
+                                    <option value="random">Random</option>
+                                    <option value="3_guards">3 guards</option>
+                                    <option value="1_guard">1 guard</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="hidden_div_hs" style="display:none">
+                        <div class="control-group required">
+                            <div class="control-label"><label for="nodes_hs">Nodes:</label></div>
+                            <div class="controls"><input class="second_row" id="nodes_hs" min="3" name="nodes_hs"
+                                                         type="number"></div>
+                        </div>
+                    </div>
+                    <div id="hidden_div_attack" style="display:none">
+                        <div class="control-group required">
+                            <div class="control-label"><label for="encryption_attack">Encryption(%):</label></div>
+                            <div class="controls"><input class="second_row" id="encryption_attack" min="0" name="encryption_attack"
+                                                         type="number"></div>
+                        </div>
+                        <div class="control-group required">
+                            <div class="control-label"><label for="guard_attack">Guard:</label></div>
+                            <div class="controls"><input class="second_row" id="guard_attack" min="0" name="guard_attack"
+                                                         type="number"></div>
+                        </div>
+                        <div class="control-group required">
+                            <div class="control-label"><label for="exit_attack">Exit:</label></div>
+                            <div class="controls"><input class="second_row" id="exit_attack" min="0" name="exit_attack"
+                                                         type="number"></div>
+                        </div>
+                        <div class="control-group required">
+                            <div class="control-label"><label for="number_of_simulations_attack">Number of
+                                simulations:</label></div>
+                            <div class="controls"><input class="second_row" id="number_of_simulations_attack" min="1"
+                                                         name="number_of_simulations_attack" type="number"></div>
+                        </div>
+                        <div class="control-group required">
+                            <div class="control-label"><label for="adv_guard">Adversary guard:</label></div>
+                            <div class="controls"><input class="second_row" id="adv_guard" min="0" name="adv_guard"
+                                                         type="number"></div>
+                        </div>
+                        <div class="control-group required">
+                            <div class="control-label"><label for="adv_exit">Adversary exit:</label></div>
+                            <div class="controls"><input class="second_row" id="adv_exit" min="0" name="adv_exit"
+                                                         type="number"></div>
+                        </div>
+                        <div class="control-group required">
+                            <div class="control-label"><label for="adv_guard_bandwidth">Adversary guard bandwidth:</label>
+                            </div>
+                            <div class="controls"><input class="second_row" id="adv_guard_bandwidth" min="0"
+                                                         name="adv_guard_bandwidth" type="number"></div>
+                        </div>
+                        <div class="control-group required">
+                            <div class="control-label"><label for="adv_exit_bandwidth">Adversary exit bandwidth:</label>
+                            </div>
+                            <div class="controls"><input class="second_row" id="adv_exit_bandwidth" min="0"
+                                                         name="adv_exit_bandwidth" type="number"></div>
+                        </div>
+                    </div>
+                    <div id="hidden_div_exit_attack" style="display:none">
+                        <div class="control-group required">
+                            <div class="control-label"><label for="encryption_exit_attack">Encryption(%):</label></div>
+                            <div class="controls"><input class="second_row" id="encryption_exit_attack" min="0" name="encryption_exit_attack"
+                                                         type="number"></div>
+                        </div>
+                        <div class="control-group required">
+                            <div class="control-label"><label for="guard_exit_attack">Guard:</label></div>
+                            <div class="controls"><input class="second_row" id="guard_exit_attack" min="0" name="guard_exit_attack"
+                                                         type="number"></div>
+                        </div>
+                        <div class="control-group required">
+                            <div class="control-label"><label for="exit_exit_attack">Exit:</label></div>
+                            <div class="controls"><input class="second_row" id="exit_exit_attack" min="0" name="exit_exit_attack"
+                                                         type="number"></div>
+                        </div>
+                        <div class="control-group required">
+                            <div class="control-label"><label for="number_of_simulations_exit_attack">Number of
+                                simulations:</label></div>
+                            <div class="controls"><input class="second_row" id="number_of_simulations_exit_attack" min="1"
+                                                         name="number_of_simulations_exit_attack" type="number"></div>
+                        </div>
+                        <div class="control-group required">
+                            <div class="control-label"><label for="adv_exit_exit_attack">Adversary exit:</label></div>
+                            <div class="controls"><input class="second_row" id="adv_exit_exit_attack" min="0" name="adv_exit_exit_attack"
+                                                         type="number"></div>
+                        </div>
+                        <div class="control-group required">
+                            <div class="control-label"><label for="adv_exit_bandwidth_exit_attack">Adversary exit bandwidth:</label>
+                            </div>
+                            <div class="controls"><input class="second_row" id="adv_exit_bandwidth_exit_attack" min="0"
+                                                         name="adv_exit_bandwidth_exit_attack" type="number"></div>
+                        </div>
+                    </div>
+                    <div class="control-group" id="not_path_submit" style="display: none">
+                        <div class="control-label"></div>
+                        <div class="controls">
+                            <input class="btn btn-primary button" name="_submit" type="submit" value="Submit">
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset id="add_nodes_path">
+                    <legend>Nodes</legend>
+                    <div class="path_node_item" id="dynamic_field">
+                        <div class="part_1">
+                            <select class="second_row" name="type[]">
+                                <option value="guard">Guard</option>
+                                <option value="middle">Middle</option>
+                                <option value="exit">Exit</option>
+                            </select>
+                            <input type="text" name="name[]" placeholder="Name" class="form-control name_list">
+                        </div>
+                        <div class="part_2">
+                            <input type="text" name="ip[]" placeholder="IP" class="form-control name_list">
+                            <input type="text" name="bandwidth[]" placeholder="Bandwidth MB/s" class="form-control name_list">
+                            <button type="button" name="add" id="add" class="btn btn-success">Add</button>
+                        </div>
+                    </div>
+                    <div class="sumbit_btn">
+                        <div class="">
+                            <input class="btn btn-primary button" name="_submit" type="submit" value="Submit">
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+        <div id="tabs" class="tabs">
+            <div id="tabs_div">
+                <ul class="nav nav-tabs" id="my_tab" role="tablist">
+                    <li class="nav-item active">
+                        <a class="nav-link active" id="info_tab" data-toggle="tab" href="#info" role="tab" aria-controls="info" aria-selected="true" aria-expanded="true">Info</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="example_tab" data-toggle="tab" href="#example" role="tab" aria-controls="example" aria-selected="false">Examples</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="my_tab_content">
+                    <div class="tab-pane fade show active in" id="info" role="tabpanel" aria-labelledby="info-info_tab">
+                        <div id="info_path">
+                            <div class="example">
+                                <p>INFO Path 1</p>
+                            </div>
+                            <div class="example">
+                                <p>INFO Path 2</p>
+                            </div>
+                        </div>
+                        <div id="info_hidden_service" style="display: none;">
+                            <div class="example">
+                                <p>INFO HS 3</p>
+                            </div>
+                            <div class="example">
+                                <p>INFO HS 4</p>
+                            </div>
+                        </div>
+                        <div id="info_attack" style="display: none;">
+                            <div class="example">
+                                <p>INFO attack 5</p>
+                            </div>
+                            <div class="example">
+                                <p>INFO attack 6</p>
+                            </div>
+                        </div>
+                        <div id="info_exit_attack" style="display: none;">
+                            <div class="example">
+                                <p>INFO exit attack 1</p>
+                            </div>
+                            <div class="example">
+                                <p>INFO exit attack 2</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="example" role="tabpanel" aria-labelledby="example_tab">
+                        <div id="example_path">
+                            <div class="example">
+                                <h5>Example 1</h5>
+                                <p>Small simulation + random</p>
+                                <button class="btn btn-secondary" id="path_example_1" type="button">Run</button>
+                            </div>
+                            <div class="example">
+                                <h5>Example 2</h5>
+                                <p>Large simulation + random</p>
+                                <button class="btn btn-secondary" id="path_example_2" type="button">Run</button>
+                            </div>
+                            <div class="example">
+                                <h5>Example 3</h5>
+                                <p>Large simulation + 3 Guards</p>
+                                <button class="btn btn-secondary" id="path_example_3" type="button">Run</button>
+                            </div>
+                            <div class="example">
+                                <h5>Example 4</h5>
+                                <p>Large simulation no middle</p>
+                                <button class="btn btn-secondary" id="path_example_4" type="button">Run</button>
+                            </div>
+                        </div>
+                        <div id="example_hidden_service" style="display: none;">
+                            <div class="example">
+                                <h5>Example 1</h5>
+                                <p>Hidden service 180</p>
+                                <button class="btn btn-secondary" id="hs_example_1" type="button">Run</button>
+                            </div>
+                            <div class="example">
+                                <h5>Example 2</h5>
+                                <p>Hidden service 250</p>
+                                <button class="btn btn-secondary" id="hs_example_2" type="button">Run</button>
+                            </div>
+                        </div>
+                        <div id="example_attack" style="display: none;">
+                            <div class="example">
+                                <h5>Example 1</h5>
+                                <p>Attack 150 50 80</p>
+                                <button class="btn btn-secondary" id="attack_example_1" type="button">Run</button>
+                            </div>
+                            <div class="example">
+                                <h5>Example 2</h5>
+                                <p>Attack 300 60 60</p>
+                                <button class="btn btn-secondary" id="attack_example_2" type="button">Run</button>
+                            </div>
+                        </div>
+                        <div id="example_exit_attack" style="display: none;">
+                            <div class="example">
+                                <h5>Example 1</h5>
+                                <p>New example not working</p>
+                                <button class="btn btn-secondary" id="exit_attack_example_1" type="button">Run</button>
+                            </div>
+                            <div class="example">
+                                <h5>Example 2</h5>
+                                <p>New example</p>
+                                <button class="btn btn-secondary" id="exit_attack_example_2" type="button">Run</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
